@@ -3,60 +3,35 @@ from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.core.mail import send_mail
-from rest_framework import status
 
-# @method_decorator(csrf_exempt, name='dispatch')
-# class Send_mail_api(APIView):
+import os
+import resend
 
-#     def post(self, request):
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
-#         name = request.data.get('name')
-#         client_mail = request.data.get('mail')
-#         description = request.data.get('desc')
-
-#         subject = f"Portfolio Contact From {name}"
-
-#         description += f"""
-
-# Sender Name: {name}
-# Sender Email: {client_mail}
-# """
-
-#         send_mail(
-#             subject,
-#             description,
-#             'shaikazad2121@gmail.com',
-#             ['shaikazad3131@gmail.com'],
-#             fail_silently=False
-#         )
-
-#         return Response({
-#             "message": "Mail sent successfully"
-#         })
-
+resend.api_key = os.environ.get("RESEND_API_KEY")
 
 class Send_mail_api(APIView):
 
     def post(self, request):
-        try:
-            name = request.data.get('name')
-            client_mail = request.data.get('mail')
-            description = request.data.get('desc')
 
-            subject = f"Portfolio Contact From {name}"
+        name = request.data.get("name")
+        client_mail = request.data.get("mail")
+        description = request.data.get("desc")
 
-            send_mail(
-                subject,
-                description,
-                'shaikazad2121@gmail.com',
-                ['shaikazad3131@gmail.com'],
-                fail_silently=False
-            )
+        resend.Emails.send({
+            "from": "onboarding@resend.dev",
+            "to": ["shaikazad3131@gmail.com"],
+            "subject": f"Portfolio Contact From {name}",
+            "html": f"""
+            <h3>Portfolio Contact</h3>
+            <p><b>Name:</b> {name}</p>
+            <p><b>Email:</b> {client_mail}</p>
+            <p><b>Message:</b> {description}</p>
+            """
+        })
 
-            return Response({"message": "success"})
-
-        except Exception as e:
-            return Response(
-                {"error": repr(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+        return Response({
+            "message": "Mail sent successfully"
+        })
