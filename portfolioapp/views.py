@@ -16,7 +16,7 @@ class Send_mail_api(APIView):
 
             result = resend.Emails.send({
                 "from": "onboarding@resend.dev",
-                "to": ["shaikazad3131@gmail.com"],
+                "to": ["shaikazad2121@gmail.com"],
                 "subject": f"Portfolio Contact From {name}",
                 "html": f"""
                 <h3>Portfolio Contact</h3>
